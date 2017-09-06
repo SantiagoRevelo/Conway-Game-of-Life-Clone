@@ -79,14 +79,13 @@ var patrones = [
 
 var marginCells = 5;
 var pixelSize = 10;
-var numCells = 20;
+var numCells = 25;
 var range = 1;
 
 var canvas = document.getElementById('gameOfLife');
-var sizeTablero = (pixelSize * numCells);
-
+var sizeTablero = numCells * pixelSize;
 //Array.reduce: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce?v=b
-var patternsW = (patrones.reduce((a, b) => a + b.length, 0) * pixelSize) + ((patrones.length - 1) * pixelSize * marginCells);
+var patternsW = (patrones.reduce((a, b) => a + b.length, 0) * pixelSize) + ((patrones.length-1) * marginCells * pixelSize);
 // Math.max.apply: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply#Using_apply_and_built-in_functions
 var patternsH = (Math.max.apply(null, patrones.map(function (el) { return el.length })) ) * pixelSize;
 
@@ -120,12 +119,11 @@ canvas.addEventListener('mousemove', function(event) {
 
         addCell( Math.floor( (coorX / pixelSize) ), Math.round(coorY / pixelSize) );
     }
-}, false);
-    
+}, false);    
     
 function addCell(x, y) {
     if ( x >= 0 && y >= 0 && x < numCells && y < numCells)
-    arr[x][y] = 1;
+    arr[y][x ] = 1;
     display(arr);
 }
 
@@ -142,9 +140,9 @@ function IniciaArray() {
 }
 
 function display(arr, startX, startY, activeColor, inactiveColor) {
-    for (var x = 0; x < arr.length; x++) {
-        for (var y = 0; y < arr[x].length; y++) {
-            drawCell(startX + x, startY + y, arr[x][y], activeColor, inactiveColor);
+    for (var row = 0; row < arr.length; row++) {
+        for (var col = 0; col < arr[row].length; col++) {
+            drawCell(startX + col, startY + row, arr[row][col], activeColor, inactiveColor);
         }
     }
 }
@@ -166,8 +164,31 @@ function randomlyPopulate(arr) {
         }
     }
 }
-/*
+
 function manualPopulate() {    
+    /*var sample = [
+        [1,1,1,0,1],
+        [1,0,0,0,0],
+        [0,0,0,1,1],
+        [0,1,1,0,1],
+        [1,0,1,0,1]
+    ];*/
+    var sample = [
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,1,0],
+        [0,0,0,0,1,0,1,1],
+        [0,0,0,0,1,0,1,0],
+        [0,0,0,0,1,0,0,0],
+        [0,0,1,0,0,0,0,0],
+        [1,0,1,0,0,0,0,0]
+    ];
+   // var sample = pattern_oscillator_4.slice();
+    
+    var filaIni = Math.floor((arr.length - sample.length) / 2);
+    var filaFin = Math.floor((arr[0].length - sample[0].length) / 2);
+    
+    arr = combineSquaredArrays(arr, sample, filaIni, filaFin);
+/*
     arr[1][0] = 1;     
     arr[2][1] = 1;    
     arr[0][2] = 1;
@@ -175,19 +196,44 @@ function manualPopulate() {
     arr[2][2] = 1;    
     arr[10][4] = 1;
     arr[11][4] = 1;
-    arr[12][4] = 1;    
-}
+    arr[12][4] = 1;
 */
+}
+
+function combineSquaredArrays(base, other, startF, startC) {
+    var combined = base.slice();
+
+    for (var f = 0; f < other.length; f++) {
+        for (var c = 0; c < other.length; c++) {
+            combined[startF + f][startC + c]= other[f][c];
+        }
+    }
+    return combined;
+}
+
 function vecinosVivos(arr, x, y) {    
    var totalVivos = 0;
         
     for ( var j = (x - range); j <= (x + range); j ++) {
-        for (var k = (y - range); k <= (y + range); k++) {            
-            if ( j >= 0 && k >= 0 && j < numCells && k < numCells) {
-                if ( !(j == x && k == y) ) {
-                    totalVivos += arr[j][k];
+        for (var k = (y - range); k <= (y + range); k++) {     
+            var f = 0;
+            var c =0;
+            if (j < 0) 
+                f = numCells + j;
+            if (k < 0) 
+                c = numCells + k;
+            
+            if (j > numCells-1) 
+                f = j - numCells;
+            if (k > numCells-1) 
+                c = k - numCells;
+            
+            
+           // if ( j >= 0 && k >= 0 && j < numCells && k < numCells) {
+                if ( !(f == x && c == y) ) {
+                    totalVivos += arr[f][c];
                 }
-            }
+            //}
         }
     }
     return totalVivos;
@@ -215,8 +261,8 @@ function paso(arr) {
     return newArr;
 }
 
-randomlyPopulate(arr);
-//manualPopulate();
+//randomlyPopulate(arr);
+manualPopulate();
 display(arr, offsetXTablero, offsetYTablero, '#00ccff', '#9966ff');
 pintaPatrones();
 
