@@ -2,7 +2,7 @@ var pixelSize = 10;
 var numCells = 20;
 var range = 1;
 
-var updateRatio = 200;
+var updateRatio = 1000 / 15;
 
 var canvas = document.getElementById('gameOfLife');
 var time = 0;
@@ -177,11 +177,15 @@ setInterval(function () {
     var newArr = step(arr);
     display(newArr);
     arr = newArr;
+
     time += updateRatio
-    timeLabel.innerHTML = 'time: ' + time / 1000;
-    populationLabel.innerHTML = 'population: ' + arr.reduce((total, amount) => {
+    population = arr.reduce((total, amount) => {
         return total.concat(amount)
     }, []).reduce((total, amount) => total + amount);
+
+
+    timeLabel.innerHTML = population > 0 ? 'time: ' + time / 1000 : '';
+    populationLabel.innerHTML = population > 0 ? 'population: ' + population : '';
 }, updateRatio);
 
 
