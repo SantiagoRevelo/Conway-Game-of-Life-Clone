@@ -1,13 +1,10 @@
 var pixelSize = 10;
-var numCells = 20;
+var numCells = 18;
 var range = 1;
 
 var updateRatio = 1000 / 15;
 
 var canvas = document.getElementById('gameOfLife');
-var time = 0;
-var timeLabel = document.getElementById('time');
-var populationLabel = document.getElementById('population');
 canvas.width = pixelSize * numCells;
 canvas.height = pixelSize * numCells;
 
@@ -20,9 +17,11 @@ var canDraw = false;
 
 canvas.addEventListener('mousedown', function (event) {
     canDraw = true;
-    var coorX = event.pageX - canvasLeft;
-    var coorY = event.pageY - canvasTop;
-    addCell(Math.floor((coorX / pixelSize)), Math.round(coorY / pixelSize));
+
+    canvasX = event.offsetX;
+    canvasY = event.offsetY;
+
+    addCell(Math.floor(canvasX / pixelSize), Math.floor(canvasY / pixelSize));
 
 }, false);
 canvas.addEventListener('mouseup', function () {
@@ -32,16 +31,16 @@ canvas.addEventListener('mouseup', function () {
 
 canvas.addEventListener('mousemove', function (event) {
     if (canDraw) {
-        var coorX = event.pageX - canvasLeft
-        var coorY = event.pageY - canvasTop;
+        canvasX = event.offsetX;
+        canvasY = event.offsetY;
 
-        addCell(Math.floor((coorX / pixelSize)), Math.round(coorY / pixelSize));
+        addCell(Math.floor(canvasX / pixelSize), Math.floor(canvasY / pixelSize));
     }
 }, false);
 
 function addCell(row, col) {
     if (col >= 0 && row >= 0 && col < numCells && row < numCells) {
-        arr[col][row] = 1;
+        arr[col][row] = arr[col][row] = 1;
     }
     display(arr);
 }
@@ -69,7 +68,7 @@ function display(arr) {
 function drawCell(x, y, alive) {
     context.beginPath();
     context.rect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-    context.fillStyle = alive ? '#00ccff' : '#9966ff';
+    context.fillStyle = alive ? '#eee' : '#222';
     context.fill();
 }
 
@@ -85,23 +84,26 @@ function randomlyPopulate(arr, r, c, w, h) {
 
 function manualPopulate() {
     var startArray = [
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1],
-        [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-        [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-        [1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-        [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1],
-        [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-        [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-        [1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     ];
+
     var filaIni = Math.floor((arr.length - startArray.length) / 2);
     var filaFin = Math.floor((arr[0].length - startArray[0].length) / 2);
 
@@ -169,39 +171,37 @@ function step(arr) {
     return newArr;
 }
 
-//randomlyPopulate(arr, Math.floor(Math.random() * numCells), Math.floor(Math.random() * numCells), Math.floor(Math.random() * numCells / 2) + 2, Math.floor(Math.random() * numCells / 2) + 2);
 manualPopulate();
 display(arr);
 
+var firstRun = true;
+var newArr;
+
+setTimeout(function () {
+    firstRun = false;
+
+    setInterval(function () {
+        if (firstRun) {
+            firstRun = false;
+        } else {
+
+            if (!canDraw) {
+                newArr = step(arr);
+                display(newArr);
+                arr = newArr;
+            }
+        }
+    }, updateRatio);
+
+}, 5000);
+
 setInterval(function () {
-    var newArr = step(arr);
-    display(newArr);
-    arr = newArr;
-
-    time += updateRatio
-    population = arr.reduce((total, amount) => {
-        return total.concat(amount)
-    }, []).reduce((total, amount) => total + amount);
-
-
-    timeLabel.innerHTML = population > 0 ? 'time: ' + time / 1000 : '';
-    populationLabel.innerHTML = population > 0 ? 'population: ' + population : '';
-}, updateRatio);
-
-
-setInterval(function () {
-        /*
-        var sum = arr.reduce((total, amount) => {
-            return total.concat(amount)
-        }, []).reduce((total, amount) => total + amount);
-        console.log("suma: " + sum);
-        */
-        //if (sum > 0)
+    if (!canDraw && !firstRun) {
         randomlyPopulate(arr,
             Math.floor(Math.random() * numCells),
             Math.floor(Math.random() * numCells),
             Math.floor(Math.random() * numCells / 2) + 2,
             Math.floor(Math.random() * numCells / 2) + 2
         );
-    },
-    4000);
+    }
+}, 5000);
